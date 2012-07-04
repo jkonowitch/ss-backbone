@@ -1,0 +1,17 @@
+{
+  "name": "todo_example",
+  "description": "An example of ss-backbone in action.",
+  "version": "0.0.1-8",
+  "author": "Jeffrey Konowitch",
+  "private": true,
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "dependencies": {
+    "socketstream": "0.3.x",
+    "ss-coffee": "0.1.x",
+    "ss-stylus": "0.1.x",
+    "ss-hogan": "0.1.x",
+    "ss-backbone": "0.0.23"
+  }
+}

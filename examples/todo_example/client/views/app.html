@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <SocketStream>
+    <meta charset="utf-8"/>
+    <title>Welcome</title>
+  </head>
+  <body>
+  <div id="logo">
+    <a href="https://github.com/socketstream/socketstream">
+      <img src="/images/logo.png" alt="SocketStream Logo" width="160" height="160">
+    </a>
+  </div>
+    <!-- Todo App Interface -->
+
+    <div id="todoapp">
+
+      <div class="title">
+        <h1>Todos</h1>
+      </div>
+
+      <div class="content">
+
+        <div id="create-todo">
+          <input id="new-todo" placeholder="What needs to be done?" type="text" />
+          <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>
+        </div>
+
+        <div id="todos">
+          <input class="check mark-all-done" type="checkbox"/>
+          <label for="check-all">Mark all as complete</label>
+          <ul id="todo-list"></ul>
+        </div>
+
+        <div id="todo-stats"></div>
+
+      </div>
+
+    </div>
+
+  
+    <div id="credits">
+      ss-backbone created by <a href="http://jeff.konowit.ch/">Jeffrey Konowitch</a>
+      <br />
+      <br />
+      App Adapted from Todo Example by
+      <br />
+      <a href="http://jgn.me/">J&eacute;r&ocirc;me Gravel-Niquet</a>. <br />Cleanup, edits: <a href="http://addyosmani.com">Addy Osmani</a>.
+    </div>
+  </body>
+</html>
