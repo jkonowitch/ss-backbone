@@ -32,7 +32,11 @@ Realtime, synced collections inherit from syncedCollection and also declare mode
     myCollection = syncedCollection.extend( {model: myModel}, {modelname: "myModel"} )
 
 #### On the server [/server/models/mymodel.js]
-This is where you decide what to do when CRUD events come in. See the [Todo example code](https://github.com/jkonowitch/ss-backbone/blob/master/examples/todo_example/) for example server logic. PS: This is where I'll be focusing on providing some conventions/tools to save developers time and give them more power out of the box.
+This is where you decide what to do when CRUD events come in.
+
+I suggest that you read the [Todo example server](https://github.com/jkonowitch/ss-backbone/blob/master/examples/todo_example/server/models/todo.js) for example server logic. Models/Collections are listening for specific events, but these protocols are not yet documented. (coming soon!) See the [ss-backbone models/collections](https://github.com/jkonowitch/ss-backbone/blob/master/src/client.coffee) code for even more detail of how this works.
+
+PS: This is where I'll be focusing on providing some conventions/tools to save developers time and give them more power out of the box.
 
     module.exports = function(ss) {
       	return {
