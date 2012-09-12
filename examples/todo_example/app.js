@@ -24,7 +24,14 @@ ss.client.formatters.add(require('ss-stylus'));
 ss.client.templateEngine.use(require('ss-hogan'));
 
 //SS-Backbone
-ss.responders.add(require('ss-backbone'));
+ss_backbone_opts = {
+  models: {
+    file_type: "coffee", // default is js
+    folder: "backbone_models" // will look in the /servers folder
+                              // default is server/models
+  }
+}
+ss.responders.add(require('ss-backbone'), ss_backbone_opts);
 
 // Minimize and pack assets if you type: SS_ENV=production node app.js
 if (ss.env == 'production') ss.client.packAssets();

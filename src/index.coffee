@@ -5,6 +5,11 @@ module.exports = (responderId, config, ss) ->
 
 	name = config && config.name || 'backbone'
 
+	model_conf = config.models || {}
+
+	file_type = model_conf.file_type || "js"
+	model_folder = model_conf.folder || "models"
+
 	underscore = fs.readFileSync(__dirname + '/../vendor/lib/underscore-min.js', 'utf8')
 	backbone = fs.readFileSync(__dirname + '/../vendor/lib/backbone-min.js', 'utf8')
 	backboneSync = fs.readFileSync(__dirname + '/client.' + (process.env['SS_DEV'] && 'coffee' || 'js'), 'utf8')
@@ -25,11 +30,11 @@ module.exports = (responderId, config, ss) ->
 
 		websocket: (msg, meta, send) ->
 			obj = JSON.parse msg
-			dir = pathlib.join(ss.root, 'server/models')
-			modelfile = "#{dir}/#{obj.modelname.toLowerCase()}.js"
+			dir = pathlib.join(ss.root, "server/#{model_folder}")
+			modelfile = "#{dir}/#{obj.modelname.toLowerCase()}.#{file_type}"
 			ss.log(msg)
 			try
-			  modelActions = loadModel(modelfile)			  
+			  modelActions = loadModel(modelfile)
 			catch e
 			  ss.log("Oops. No such model #{modelfile} on the server")
 			  send("Oops. No such model #{modelfile} on the server")
