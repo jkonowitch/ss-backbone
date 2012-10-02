@@ -34,23 +34,67 @@ Realtime, synced collections inherit from syncedCollection and also declare mode
 #### On the server [/server/models/mymodel.js]
 This is where you decide what to do when CRUD events come in.
 
-I suggest that you read the [Todo example server](https://github.com/jkonowitch/ss-backbone/blob/master/examples/todo_example/server/models/todo.js) for example server logic. Models/Collections are listening for specific events, but these protocols are not yet documented. (coming soon!) See the [ss-backbone models/collections](https://github.com/jkonowitch/ss-backbone/blob/master/src/client.coffee) code for even more detail of how this works.
+I suggest that you read the [Todo example server](https://github.com/jkonowitch/ss-backbone/blob/master/examples/todo_example/server/backbone_models/todo.coffee) for example server logic. Models/Collections are listening for specific events, but these protocols are not yet documented. (coming soon!) See the [ss-backbone models/collections](https://github.com/jkonowitch/ss-backbone/blob/master/src/client.coffee) code for even more detail of how this works.
 
 PS: This is where I'll be focusing on providing some conventions/tools to save developers time and give them more power out of the box.
+```cofeescript
+module.exports = (req, res, ss) ->
+  # Preload session data in to req.session
+  req.use('session')
 
-    module.exports = function(ss) {
-      	return {
-        	create: function(msg, meta, send) {
-        		#do stuff
-        	},
-        	update: function(msg, meta, send) {
-        		#do stuff
-        	},
-        	read: function(msg, meta, send) {
-        		#do stuff
-        	},
-        	delete: function(msg, meta, send) {
-        		#do stuff
-        	}
-        }
-    }
+  create: (model) ->
+    cid = req.cid
+    model.id = ids++
+    res =
+      cid: cid
+      model: model
+      method: "confirm"
+      modelname: "Todo"
+
+    memoryStore[model.id] = model
+    ss.publish.socketId req.socketId, "sync:Todo:" + cid, JSON.stringify(res)
+    delete res.cid
+
+    res.method = "create"
+    ss.publish.all "sync:Todo", JSON.stringify(res)
+
+  update: (model) ->
+    memoryStore[model.id] and (memoryStore[model.id] = model)
+    res =
+      model: model
+      method: "update"
+      modelname: "Todo"
+
+    res = JSON.stringify(res)
+    ss.publish.all "sync:Todo:" + model.id, res
+
+  read: (model) ->
+    fetchedModel = memoryStore[model.id]
+    res =
+      model: fetchedModel
+      method: "read"
+      modelname: "Todo"
+
+    ss.publish.socketId req.socketId, "sync:Todo:" + model.id, JSON.stringify(res)
+
+  # For collections requestions all models at once
+  readAll: (model) ->
+    models = []
+    for id of memoryStore
+      models.push memoryStore[id]
+    res =
+      models: models
+      method: "read"
+      modelname: "Todo"
+
+    ss.publish.socketId req.socketId, "sync:Todo", JSON.stringify(res)
+
+  delete: (model) ->
+    if delete memoryStore[model.id]
+      res =
+        method: "delete"
+        model: model
+        modelname: "Todo"
+
+      ss.publish.all "sync:Todo:" + model.id, JSON.stringify(res)
+```
