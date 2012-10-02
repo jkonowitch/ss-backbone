@@ -41,7 +41,7 @@ module.exports = (req, res, ss) ->
 
     ss.publish.socketId req.socketId, "sync:Todo:" + model.id, JSON.stringify(res)
 
-  # For collections requestions all models at once
+  # For collections requesting all models at once
   readAll: (model) ->
     models = []
     for id of memoryStore
