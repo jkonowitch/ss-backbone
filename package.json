@@ -2,7 +2,7 @@
   "author": "Jeffrey Konowitch",
   "name": "ss-backbone",
   "description": "Backbone backend over socket.io for SocketStream",
-  "version": "0.0.24",
+  "version": "0.0.3",
   "main": "./index.js",
   "dependencies": {},
   "devDependencies": {},
