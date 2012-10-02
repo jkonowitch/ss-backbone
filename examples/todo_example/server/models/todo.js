@@ -4,73 +4,67 @@ memoryStore = {};
 
 ids = 1;
 
-module.exports = function(ss) {
+module.exports = function(req, res, ss) {
+  req.use('session');
   return {
-    create: function(msg, meta, send) {
-      var model, res;
-      if (msg.cid) {
-        model = msg.model;
-        model.id = ids++;
-        res = {
-          cid: msg.cid,
-          model: model,
-          method: "confirm",
-          modelname: "Todo"
-        };
-        memoryStore[model.id] = model;
-        ss.publish.socketId(meta.socketId, "sync:Todo:" + msg.cid, JSON.stringify(res));
-        delete res.cid;
-        res.method = "create"
-        return ss.publish.all("sync:Todo", JSON.stringify(res));
-      }
-    },
-    update: function(msg, meta, send) {
-      var res;
-      memoryStore[msg.model.id] && (memoryStore[msg.model.id] = msg.model)
+    create: function(model) {
+      var cid;
+      cid = req.cid;
+      model.id = ids++;
       res = {
-        model: msg.model,
+        cid: cid,
+        model: model,
+        method: "confirm",
+        modelname: "Todo"
+      };
+      memoryStore[model.id] = model;
+      ss.publish.socketId(req.socketId, "sync:Todo:" + cid, JSON.stringify(res));
+      delete res.cid;
+      res.method = "create";
+      return ss.publish.all("sync:Todo", JSON.stringify(res));
+    },
+    update: function(model) {
+      memoryStore[model.id] && (memoryStore[model.id] = model);
+      res = {
+        model: model,
         method: "update",
         modelname: "Todo"
       };
-      res = JSON.stringify(res)
-      return ss.publish.all("sync:Todo:" + msg.model.id, res);
+      res = JSON.stringify(res);
+      return ss.publish.all("sync:Todo:" + model.id, res);
     },
-    read: function(msg, meta, send) {
-      var fetchedModel, models, res;
-      if (isArray(msg.model)) {
-        models = []
-        for (id in memoryStore) {
-          models.push(memoryStore[id]);
-        }
-        res = {
-          models: models,
-          method: "read",
-          modelname: "Todo"
-        };
-        return ss.publish.socketId(meta.socketId, "sync:Todo", JSON.stringify(res));
-      } else {
-        fetchedModel = memoryStore[msg.model.id]
-        res = {
-          model: fetchedModel,
-          method: "read",
-          modelname: "Todo"
-        };
-        return ss.publish.socketId(meta.socketId, "sync:Todo:" + msg.model.id, JSON.stringify(res));
+    read: function(model) {
+      var fetchedModel;
+      fetchedModel = memoryStore[model.id];
+      res = {
+        model: fetchedModel,
+        method: "read",
+        modelname: "Todo"
+      };
+      return ss.publish.socketId(req.socketId, "sync:Todo:" + model.id, JSON.stringify(res));
+    },
+    readAll: function(model) {
+      var id, models;
+      models = [];
+      for (id in memoryStore) {
+        models.push(memoryStore[id]);
       }
+      res = {
+        models: models,
+        method: "read",
+        modelname: "Todo"
+      };
+      return ss.publish.socketId(req.socketId, "sync:Todo", JSON.stringify(res));
     },
-    delete: function(msg, meta, send) {
-      if (delete memoryStore[msg.model.id]) {
+    "delete": function(model) {
+      if (delete memoryStore[model.id]) {
         res = {
           method: "delete",
-          model: msg.model,
+          model: model,
           modelname: "Todo"
-        }
-        ss.publish.all("sync:Todo:" + msg.model.id, JSON.stringify(res))
+        };
+        return ss.publish.all("sync:Todo:" + model.id, JSON.stringify(res));
       }
     }
   };
 };
-
-isArray = function(obj) {
-    return Object.prototype.toString.call(obj) == '[object Array]';
-  };
