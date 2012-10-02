@@ -1,13 +1,19 @@
 // Initial entry point. Decides which directory of code to load
 
-var file;
+var main, helpers;
 
 // Start your app with SS_DEV=1 to run the CoffeeScript /src code at runtime
 if (process.env['SS_DEV']) {
-  file = 'src/index.coffee';
+  main = 'src/index.coffee';
+  helpers = 'src/server_helpers.coffee'
 } else {
-  file = 'lib/index.js';
+  main = 'lib/index.js';
+  helpers = 'lib/server_helpers'
 }
 
 // Load ss-backbone
-module.exports = require('./' + file);
+
+module.exports = require('./' + main);
+
+module.exports.helpers = require('./' + helpers);
+

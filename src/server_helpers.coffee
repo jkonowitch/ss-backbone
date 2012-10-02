@@ -1,0 +1,1 @@
+confirm_create = (msg) ->
