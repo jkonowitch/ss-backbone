@@ -5,11 +5,6 @@ module.exports = (responderId, config, ss) ->
 
 	name = config && config.name || 'backbone'
 
-	model_conf = config.models || {}
-
-	file_type = model_conf.file_type || "js"
-	model_folder = model_conf.folder || "models"
-
 	underscore = fs.readFileSync(__dirname + '/../vendor/lib/underscore-min.js', 'utf8')
 	backbone = fs.readFileSync(__dirname + '/../vendor/lib/backbone-min.js', 'utf8')
 	backboneSync = fs.readFileSync(__dirname + '/client.' + (process.env['SS_DEV'] && 'coffee' || 'js'), 'utf8')
@@ -23,22 +18,39 @@ module.exports = (responderId, config, ss) ->
 
 	name: name
 
-	loadModel = (modelfile) ->
-		require(modelfile)(ss)
-
 	interfaces: (middleware) ->
 
 		websocket: (msg, meta, send) ->
-			obj = JSON.parse msg
-			dir = pathlib.join(ss.root, "server/#{model_folder}")
-			modelfile = "#{dir}/#{obj.modelname.toLowerCase()}.#{file_type}"
-			ss.log(msg)
+			# Get request handler
+			request = require('./request')(ss, middleware, config)
+			msg = JSON.parse(msg)
+
+			# Expand message fields so they're easier to work with
+			model = msg.model
+
+			req =
+				modelName:  msg.modelname
+				cid:				msg.cid
+				method:     msg.method
+				socketId:   meta.socketId
+				clientIp:   meta.clientIp
+				sessionId:  meta.sessionId
+				transport:  meta.transport
+				receivedAt: Date.now()
+
+			handleError = (e) ->
+				message = (meta.clientIp == '127.0.0.1') && e.stack || 'See server-side logs'
+				obj = {id: req.id, e: {message: message}}
+				ss.log('↩'.red, req.method, e.message.red)
+				ss.log(e.stack.split("\n").splice(1).join("\n")) if e.stack
+				send(JSON.stringify(obj))
+
+			# Process request
 			try
-			  modelActions = loadModel(modelfile)
+				request model, req, (err, response) ->
+					return handleError(err) if err
+					timeTaken = Date.now() - req.receivedAt
+					ss.log('↩'.green, req.method, "(#{timeTaken}ms)".grey)
+					send(JSON.stringify(response))
 			catch e
-			  ss.log("Oops. No such model #{modelfile} on the server")
-			  send("Oops. No such model #{modelfile} on the server")
-			if modelActions && modelActions[obj.method]
-				modelActions[obj.method](obj, meta, send)
-			else
-			  send("Action: '#{obj.method}' not found")
+				handleError(e)
