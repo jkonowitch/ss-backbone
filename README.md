@@ -2,7 +2,7 @@
 
 SS-Backbone is a drop-in Backbone library for your SocketStream apps meant for realtime syncing of model data. It is still in the early days, but the goal is to make writing realtime SocketStream Backbone apps a joy by removing a lot of boilerplate setup. Any models you want to sync through a socket will inherit from a syncedModel class, and should be housed by a syncedCollection class (instructions below). All models using these prototypes will fire CRUD events at the server, and will listen for CRUD events from the server, thus keeping all connected clients up to date with the most recent state of the data.
 
-Check out the live app at http://ss-backbone-example.jit.su/ - open in more than one browser to get the 'syncing' effect. The app is essentially copied and pasted from the [TodoMVC](http://todomvc.com) Backbone example app. All I had to do to get this working as a realtime, synced app was to have models/collections inherit from syncedModel and syncedCollection. The code for this example is here: [Todo example code](https://github.com/jkonowitch/ss-backbone/blob/master/examples/todo_example/)
+Check out the live app at http://jeff.konowit.ch/todo_example - open in more than one browser to get the 'syncing' effect. The app is essentially copied and pasted from the [TodoMVC](http://todomvc.com) Backbone example app. All I had to do to get this working as a realtime, synced app was to have models/collections inherit from syncedModel and syncedCollection. The code for this example is here: [Todo example code](https://github.com/jkonowitch/ss-backbone/blob/master/examples/todo_example/)
 
 #### Add the module to your package.json
 ```javascript
