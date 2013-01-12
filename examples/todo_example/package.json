@@ -12,6 +12,6 @@
     "ss-coffee": "0.1.x",
     "ss-stylus": "0.1.x",
     "ss-hogan": "0.1.x",
-    "ss-backbone": "0.0.23"
+    "ss-backbone": "0.0.3"
   }
 }
